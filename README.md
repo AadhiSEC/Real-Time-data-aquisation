@@ -187,6 +187,7 @@ README.md
 * Verilog HDL
 * Vivado 2022.2
 * XADC Wizard IP
+* Cadence Nclaunch
 
 ---
 
