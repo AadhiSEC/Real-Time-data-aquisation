@@ -1,125 +1,73 @@
 # Sensor Data Acquisition and Threshold Monitoring System using XADC on Spartan-7 FPGA
 
-## 1. Project Overview
+## Project Overview
 
-This project implements a real-time Sensor Data Acquisition and Threshold Monitoring System on the RealDigital Boolean Board using the Xilinx Spartan-7 FPGA. The system acquires sensor values through the XADC and simulated sensor channels, processes the acquired data using a moving average filter, stores data temporarily in a FIFO buffer, and performs threshold monitoring. Visual feedback is provided using RGB LEDs and dual 4-digit seven-segment displays.
+This project implements a Sensor Data Acquisition and Threshold Monitoring System on the RealDigital Boolean Board using the Xilinx Spartan-7 FPGA. The system acquires sensor data from multiple sources, processes the acquired values using a moving average filter, stores the processed data in a FIFO buffer, and monitors the values against predefined threshold levels.
+
+A visual indication is provided through on-board LEDs. Whenever the processed sensor value exceeds the threshold value, the corresponding LED blinks, indicating an alert condition.
 
 ---
 
-## 2. Key Features
+## Key Features
 
-* Real-time XADC temperature monitoring
-* Four-channel sensor selection
-* 4×1 Multiplexer architecture
-* ADC data acquisition
+* Real-time sensor data acquisition
+* Four sensor channel selection using slide switches
+* XADC-based temperature monitoring
 * Moving average filtering
-* FIFO-based data buffering
-* FSM-controlled write/read operations
-* Threshold monitoring
-* RGB LED indication
-* Dual seven-segment display interface
-* 10 kHz sampling rate
+* FIFO-based temporary storage
+* FSM-controlled FIFO write/read operations
+* Threshold monitoring and alert generation
+* LED-based indication for threshold violation
+* Dual 4-digit seven-segment displays
+* 10 kHz sampling frequency
 * Spartan-7 FPGA implementation
 
 ---
 
-## 3. Hardware and Software
+## Hardware Used
 
-| Category      | Tool / Hardware            |
-| ------------- | -------------------------- |
-| FPGA Board    | RealDigital Boolean Board  |
-| FPGA Device   | Xilinx Spartan-7           |
-| ADC           | On-Chip XADC               |
-| Display       | Dual 4-Digit Seven Segment |
-| Indicator     | RGB LED                    |
-| Input Devices | Slide Switches             |
-| HDL           | Verilog HDL                |
-| Design Tool   | Vivado 2022.2              |
+* RealDigital Boolean Board
+* Xilinx Spartan-7 FPGA
+* On-chip XADC
+* Four User LEDs
+* Dual 4-Digit Seven Segment Displays
+* Slide Switches
+* Vivado Design Suite
 
 ---
 
-## 4. Architecture Overview
+## System Architecture
 
-```text
 Sensor Inputs
-      │
-      ▼
-   4×1 MUX
-      │
-      ▼
- ADC Controller
-      │
-      ▼
- Processing Unit
-(Moving Average)
-      │
-      ▼
-   FIFO Buffer
-      │
-      ▼
- Threshold Comparator
-      │
-      ├────────► RGB LED
-      │
-      ▼
- Seven Segment Displays
-```
+↓
+4×1 Multiplexer
+↓
+ADC Controller
+↓
+Processing Unit (Moving Average Filter)
+↓
+FIFO Buffer
+↓
+Threshold Comparator
+↓
+LED Alert Indication
+↓
+Seven Segment Displays
 
 ---
 
-## 5. Module Description
+## Sensor Configuration
 
-### Multiplexer
-
-Selects one of four sensor channels based on switch inputs.
-
-### ADC Controller
-
-Captures selected sensor data at 10 kHz sampling frequency.
-
-### Processing Unit
-
-Implements a moving average filter:
-
-```text
-Processed Data =
-(Current Sample + Previous Sample)/2
-```
-
-### FIFO Buffer
-
-Stores processed data temporarily before output processing.
-
-### FSM Controller
-
-Controls FIFO write and read operations.
-
-### Threshold Comparator
-
-Compares sensor values against predefined threshold values.
-
-### RGB Indicator
-
-Provides visual indication based on threshold status.
-
-### Seven Segment Display Controller
-
-Displays threshold value and sensor value simultaneously.
+| Sensor   | Description               |
+| -------- | ------------------------- |
+| Sensor 0 | Temperature Sensor (XADC) |
+| Sensor 1 | Simulated Sensor          |
+| Sensor 2 | Simulated Sensor          |
+| Sensor 3 | Simulated Sensor          |
 
 ---
 
-## 6. Sensor Configuration
-
-| Sensor   | Description                |
-| -------- | -------------------------- |
-| Sensor 0 | Real Temperature from XADC |
-| Sensor 1 | Simulated Sensor           |
-| Sensor 2 | Simulated Sensor           |
-| Sensor 3 | Simulated Sensor           |
-
----
-
-## 7. Sensor Selection
+## Sensor Selection
 
 | Switches | Selected Sensor |
 | -------- | --------------- |
@@ -130,158 +78,129 @@ Displays threshold value and sensor value simultaneously.
 
 ---
 
-## 8. XADC Temperature Conversion
+## Processing Unit
 
-Temperature is calculated using:
+A moving average filter is used to smooth the sensor data.
 
-```text
-Temperature (°C)
-=
-((ADC_Value × 504) / 4096) − 273
-```
+Processed Data = (Current Sample + Previous Sample) / 2
 
-where:
-
-* ADC_Value = Raw XADC Output
-* 504 = Scaling Constant
-* 273 = Kelvin to Celsius Conversion
+This helps reduce noise and provides a stable output.
 
 ---
 
-## 9. Threshold Configuration
+## FIFO Buffer
 
-| Sensor             | Threshold |
-| ------------------ | --------- |
-| Temperature Sensor | 38°C      |
-| Sensor 1           | 3000      |
-| Sensor 2           | 3000      |
-| Sensor 3           | 3000      |
+The FIFO buffer temporarily stores processed sensor data before output processing.
 
----
+Features:
 
-## 10. RGB LED Indication
-
-| Condition        | RGB Output | Status  |
-| ---------------- | ---------- | ------- |
-| Data < Threshold | Green      | Normal  |
-| Data = Threshold | Yellow     | Warning |
-| Data > Threshold | Red        | Alert   |
+* 16-word FIFO memory
+* FSM-controlled write and read operations
+* Temporary storage of sensor samples
+* Data synchronization
 
 ---
 
-## 11. Seven Segment Display Interface
+## Threshold Monitoring
+
+The processed sensor value is continuously compared against a predefined threshold value.
+
+Threshold Value = 2000
+
+Condition:
+
+* Data < Threshold → LED OFF
+* Data > Threshold → LED BLINKS
+
+---
+
+## LED Output Behaviour
+
+| Switch Selection | Sensor Value | Threshold | LED Status |
+| ---------------- | ------------ | --------- | ---------- |
+| 00               | 1000         | 2000      | OFF        |
+| 01               | 1500         | 2000      | OFF        |
+| 10               | 2500         | 2000      | BLINKING   |
+| 11               | 3500         | 2000      | BLINKING   |
+
+---
+
+## Seven Segment Displays
 
 ### Left Display
 
-Displays threshold value.
+Displays Threshold Value
 
 Example:
 
-```text
-3000
-```
-
-or
-
-```text
-0038
-```
-
-for temperature monitoring.
+2000
 
 ### Right Display
 
-Displays current sensor value.
+Displays Current Sensor Value
 
-Example:
+Examples:
 
-```text
+1000
+
 1500
+
 2500
+
 3500
-0035
-```
 
 ---
 
-## 12. Hardware Verification
+## Sampling Frequency
 
-### Sensor 0 (Temperature)
+FPGA Clock = 100 MHz
 
-| Temperature | RGB    |
-| ----------- | ------ |
-| < 38        | Green  |
-| = 38        | Yellow |
-| > 38        | Red    |
+Sample Tick = 10 kHz
 
-### Sensor 1
-
-| Value  | RGB    |
-| ------ | ------ |
-| < 3000 | Green  |
-| = 3000 | Yellow |
-| > 3000 | Red    |
-
-### Sensor 2
-
-| Value  | RGB    |
-| ------ | ------ |
-| < 3000 | Green  |
-| = 3000 | Yellow |
-| > 3000 | Red    |
-
-### Sensor 3
-
-| Value  | RGB    |
-| ------ | ------ |
-| < 3000 | Green  |
-| = 3000 | Yellow |
-| > 3000 | Red    |
+A counter-based clock divider is used to generate the sampling tick.
 
 ---
 
-## 13. Repository Structure
+## Files Included
 
-```text
-Sensor-Data-Acquisition-System/
-│
-├── rtl/
-│   ├── top_module.v
-│   ├── mux4x1.v
-│   ├── adc_controller.v
-│   ├── processing_unit.v
-│   ├── fifo_buffer.v
-│   ├── control_fsm.v
-│   ├── output_rgb.v
-│   └── seven_segment.v
-│
-├── constraints/
-│   └── boolean_board.xdc
-│
-├── tb/
-│   └── top_module_tb.v
-│
-├── docs/
-│   └── project_images/
-│
-└── README.md
-```
+rtl/
+├── top_module.v
+├── mux4x1.v
+├── adc_controller.v
+├── processing_unit.v
+├── fifo_buffer.v
+├── control_fsm.v
+└── output_led.v
+
+constraints/
+└── boolean_board.xdc
+
+tb/
+└── top_module_tb.v
+
+README.md
 
 ---
 
-## 14. Future Enhancements
+## Tools Used
 
-* PWM-based LED brightness control
-* Potentiometer-based threshold adjustment
-* UART communication
-* External sensor interfacing
-* OLED/LCD display integration
-* IoT monitoring system
+* Verilog HDL
+* Vivado 2022.2
+* XADC Wizard IP
 
 ---
 
-## 15. Conclusion
+## Future Enhancements
 
-The project successfully demonstrates real-time sensor acquisition, XADC temperature monitoring, digital signal processing, FIFO buffering, threshold monitoring, RGB LED status indication, and seven-segment visualization on the Spartan-7 FPGA platform. The design provides a scalable architecture suitable for industrial monitoring, embedded sensing, and FPGA-based instrumentation applications.
+* RGB Threshold Indication
+* Potentiometer-Based Threshold Control
+* PWM Brightness Control
+* UART Communication
+* IoT Monitoring
+* OLED/LCD Interface
 
-This is the format I would recommend for your GitHub README because it matches the professional style of the CAN-FD project while staying focused on your FPGA sensor-monitoring system.
+---
+
+## Conclusion
+
+The project successfully demonstrates sensor data acquisition, data processing, FIFO buffering, threshold monitoring, and visual indication using LEDs and seven-segment displays on the Spartan-7 FPGA platform. The design provides a practical framework for real-time monitoring applications in embedded and FPGA-based systems.
