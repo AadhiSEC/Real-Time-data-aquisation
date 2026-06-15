@@ -1,19 +1,3 @@
-Yes, I see the format you want. It is a **professional GitHub README** with sections like:
-
-* Project Overview
-* Features
-* Hardware Used
-* Architecture Overview
-* Module Description
-* Output Behaviour
-* Hardware Verification
-* Repository Structure
-* Future Work
-
-similar to the CAN-FD README you uploaded. 
-
-For your FPGA project, I recommend this structure:
-
 # Sensor Data Acquisition and Threshold Monitoring System using XADC on Spartan-7 FPGA
 
 ## 1. Project Overview
