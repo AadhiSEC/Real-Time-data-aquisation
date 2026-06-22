@@ -63,6 +63,54 @@ begin
     end
 
 end
+wire [15:0] xadc_data;
+wire drdy;
+wire [4:0] channel_out;
+
+reg [11:0] temp_data = 0;
+
+xadc_wiz_0 xadc_inst (
+.daddr_in(7'd0),
+.dclk_in(clk),
+.den_in(1'b1),
+.di_in(16'd0),
+.dwe_in(1'b0),
+.reset_in(1'b0),
+.busy_out(),
+.channel_out(channel_out),
+.do_out(xadc_data),
+.drdy_out(drdy),
+.eoc_out(),
+.eos_out(),
+.ot_out(),
+.vccaux_alarm_out(),
+.vccint_alarm_out(),
+.user_temp_alarm_out(),
+.alarm_out(),
+.vp_in(1'b0),
+.vn_in(1'b0)
+);
+
+//=========================================================
+// REAL TEMPERATURE
+//=========================================================
+
+always @(posedge clk)
+begin
+
+    if(drdy)
+    begin
+
+        case(channel_out)
+
+            5'h00:
+            temp_data <= ((xadc_data[15:4] * 504) / 4096) - 273;
+
+        endcase
+
+    end
+
+end
 
 
 //=========================================================
