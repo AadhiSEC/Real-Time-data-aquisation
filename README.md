@@ -2,9 +2,11 @@
 
 ## Project Overview
 
-This project implements a Sensor Data Acquisition and Threshold Monitoring System on the RealDigital Boolean Board using the Xilinx Spartan-7 FPGA. The system acquires sensor data from multiple sources, processes the acquired values using a moving average filter, stores the processed data in a FIFO buffer, and monitors the values against predefined threshold levels.
+This project implements a real-time Sensor Data Acquisition and Threshold Monitoring System on the RealDigital Boolean Board using the Xilinx Spartan-7 FPGA. The system acquires sensor data from multiple sources, processes the acquired values using a moving average filter, stores the processed data in a FIFO buffer, and monitors the values against predefined threshold levels.
 
-A visual indication is provided through on-board LEDs. Whenever the processed sensor value exceeds the threshold value, the corresponding LED blinks, indicating an alert condition.
+Visual indication is provided through on-board LEDs. Whenever the processed sensor value exceeds the threshold value, the corresponding LED blinks, indicating an alert condition. The threshold value and sensor value are displayed on dual seven-segment displays for real-time monitoring.
+
+In addition to FPGA implementation, the design flow was further explored through ASIC physical design concepts using Cadence Innovus, including floorplanning, power planning, and placement analysis.
 
 ---
 
@@ -15,44 +17,57 @@ A visual indication is provided through on-board LEDs. Whenever the processed se
 * XADC-based temperature monitoring
 * Moving average filtering
 * FIFO-based temporary storage
-* FSM-controlled FIFO write/read operations
+* FSM-controlled FIFO operations
 * Threshold monitoring and alert generation
-* LED-based indication for threshold violation
-* Dual 4-digit seven-segment displays
+* LED-based indication
+* Dual seven-segment displays
 * 10 kHz sampling frequency
 * Spartan-7 FPGA implementation
+* Physical design exploration using Cadence Innovus
 
 ---
 
-## Hardware Used
+## Hardware and Software Used
 
-* RealDigital Boolean Board
-* Xilinx Spartan-7 FPGA
-* On-chip XADC
-* Four User LEDs
-* Dual 4-Digit Seven Segment Displays
-* Slide Switches
-* Vivado Design Suite
+| Category             | Tool / Hardware            |
+| -------------------- | -------------------------- |
+| FPGA Board           | RealDigital Boolean Board  |
+| FPGA Device          | Xilinx Spartan-7           |
+| ADC                  | On-Chip XADC               |
+| Display              | Dual 4-Digit Seven Segment |
+| Indicators           | User LEDs                  |
+| HDL                  | Verilog HDL                |
+| FPGA Tool            | Vivado 2022.2              |
+| Physical Design Tool | Cadence Innovus            |
 
 ---
 
 ## System Architecture
 
+```text
 Sensor Inputs
-↓
-4×1 Multiplexer
-↓
-ADC Controller
-↓
-Processing Unit (Moving Average Filter)
-↓
-FIFO Buffer
-↓
-Threshold Comparator
-↓
-LED Alert Indication
-↓
-Seven Segment Displays
+      │
+      ▼
+   4×1 MUX
+      │
+      ▼
+ ADC Controller
+      │
+      ▼
+ Processing Unit
+(Moving Average)
+      │
+      ▼
+   FIFO Buffer
+      │
+      ▼
+ Threshold Comparator
+      │
+      ├────────► LED Alert
+      │
+      ▼
+ Seven Segment Displays
+```
 
 ---
 
@@ -80,11 +95,14 @@ Seven Segment Displays
 
 ## Processing Unit
 
-A moving average filter is used to smooth the sensor data.
+A moving average filter is used to smooth the acquired sensor data.
 
-Processed Data = (Current Sample + Previous Sample) / 2
+```text
+Processed Data =
+(Current Sample + Previous Sample)/2
+```
 
-This helps reduce noise and provides a stable output.
+This reduces noise and improves output stability.
 
 ---
 
@@ -95,7 +113,7 @@ The FIFO buffer temporarily stores processed sensor data before output processin
 Features:
 
 * 16-word FIFO memory
-* FSM-controlled write and read operations
+* Write and read control through FSM
 * Temporary storage of sensor samples
 * Data synchronization
 
@@ -105,7 +123,11 @@ Features:
 
 The processed sensor value is continuously compared against a predefined threshold value.
 
-Threshold Value = 2000
+Threshold Value:
+
+```text
+2000
+```
 
 Condition:
 
@@ -133,7 +155,9 @@ Displays Threshold Value
 
 Example:
 
+```text
 2000
+```
 
 ### Right Display
 
@@ -141,67 +165,117 @@ Displays Current Sensor Value
 
 Examples:
 
+```text
 1000
-
 1500
-
 2500
-
 3500
+```
 
 ---
 
 ## Sampling Frequency
 
-FPGA Clock = 100 MHz
+FPGA Clock:
 
-Sample Tick = 10 kHz
+```text
+100 MHz
+```
 
-A counter-based clock divider is used to generate the sampling tick.
+Sampling Tick:
 
----
+```text
+10 kHz
+```
 
-## Files Included
-
-rtl/
-├── top_module.v
-├── mux4x1.v
-├── adc_controller.v
-├── processing_unit.v
-├── fifo_buffer.v
-├── control_fsm.v
-└── output_led.v
-
-constraints/
-└── boolean_board.xdc
-
-tb/
-└── top_module_tb.v
-
-README.md
+Generated using a counter-based clock divider.
 
 ---
 
-## Tools Used
+## FPGA Implementation Results
 
-* Verilog HDL
-* Vivado 2022.2
-* XADC Wizard IP
-* Cadence Nclaunch
+Successfully implemented and verified on Spartan-7 FPGA:
+
+* Sensor Selection using Switches
+* Data Acquisition
+* Moving Average Processing
+* FIFO Storage
+* FSM Control
+* Threshold Detection
+* LED Alert Indication
+* Seven Segment Display Monitoring
+
+---
+
+## Physical Design Exploration using Cadence Innovus
+
+To gain exposure to ASIC backend design methodologies, the synthesized design flow was further studied using Cadence Innovus.
+
+### Stages Explored
+
+* Floorplanning
+* Power Planning
+* Standard Cell Placement
+* Congestion Analysis
+* Utilization Analysis
+
+### Placement Result
+
+The design was successfully taken through the placement stage in Cadence Innovus.
+<img width="602" height="321" alt="image" src="https://github.com/user-attachments/assets/6873cbfe-c78a-42c4-8d0d-a0a05a10d886" />
+
+
+### Concepts Learned
+
+* ASIC Physical Design Flow
+* Core Utilization Analysis
+* Power Distribution Planning
+* Standard Cell Placement
+* Congestion-Aware Design
+* Backend VLSI Design Methodology
+
+---
+
+## Repository Structure
+
+```text
+Sensor-Data-Acquisition-System/
+│
+├── rtl/
+│   ├── top_module.v
+│   ├── mux4x1.v
+│   ├── adc_controller.v
+│   ├── processing_unit.v
+│   ├── fifo_buffer.v
+│   ├── control_fsm.v
+│   └── output_led.v
+│
+├── constraints/
+│   └── boolean_board.xdc
+│
+├── tb/
+│   └── top_module_tb.v
+│
+├── docs/
+│   └── placement_result.png
+│
+└── README.md
+```
 
 ---
 
 ## Future Enhancements
 
-* RGB Threshold Indication
+* RGB LED Threshold Indication
 * Potentiometer-Based Threshold Control
 * PWM Brightness Control
 * UART Communication
 * IoT Monitoring
 * OLED/LCD Interface
+* Complete ASIC Physical Design Flow (CTS, Routing and Signoff)
 
 ---
 
 ## Conclusion
 
-The project successfully demonstrates sensor data acquisition, data processing, FIFO buffering, threshold monitoring, and visual indication using LEDs and seven-segment displays on the Spartan-7 FPGA platform. The design provides a practical framework for real-time monitoring applications in embedded and FPGA-based systems.
+This project successfully demonstrates real-time sensor acquisition, XADC-based monitoring, moving average filtering, FIFO buffering, threshold detection, LED-based alert indication, and seven-segment display visualization on a Spartan-7 FPGA. Additionally, exposure to Cadence Innovus enabled understanding of ASIC physical design concepts such as floorplanning, power planning, and placement, providing a comprehensive view of both FPGA and VLSI implementation methodologies.
