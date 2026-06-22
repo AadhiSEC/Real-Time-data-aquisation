@@ -222,8 +222,8 @@ To gain exposure to ASIC backend design methodologies, the synthesized design fl
 ### Placement Result
 
 The design was successfully taken through the placement stage in Cadence Innovus.
-<img width="602" height="321" alt="image" src="https://github.com/user-attachments/assets/6873cbfe-c78a-42c4-8d0d-a0a05a10d886" />
 
+<img width="602" height="321" alt="image" src="https://github.com/user-attachments/assets/ed979700-f6ab-4eb5-a3cb-9593eb797496" />
 
 ### Concepts Learned
 
